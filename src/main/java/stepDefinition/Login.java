@@ -8,12 +8,19 @@ import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import pages.loginPage;
+import pages.*;
 
 public class Login {
 
     private WebDriver driver;
     private loginPage LoginPage; // Instantiate the Page Object class
+    private ProductsPage product;
+
+    private YourCartPage Cart;
+
+    private CheckoutUserInfo Checkout;
+
+    private CheckoutOverview overview;
     @Before
     public void setup(){
         System.setProperty("webdriver.chrome.driver",System.getProperty("user.dir")+ ("/src/main/java/drivers/chromedriver.exe"));
@@ -22,6 +29,10 @@ public class Login {
         driver= new ChromeDriver(chromeoptions);
         driver.manage().window().maximize();
         LoginPage = new loginPage(driver); // Initialize the Page Object class
+        product= new ProductsPage(driver);
+        Cart= new YourCartPage(driver);
+        Checkout= new CheckoutUserInfo(driver);
+        overview= new CheckoutOverview(driver);
     }
 
     @After
@@ -41,8 +52,9 @@ public class Login {
     }
 
     @When("User clicks the Login button")
-    public void user_clicks_the_Login_button() {
+    public void user_clicks_the_Login_button() throws InterruptedException {
         loginPage.clickLoginButton(); // Use method from the Page Object class
+        Thread.sleep(4000);
     }
 
 
@@ -52,5 +64,56 @@ public class Login {
 
         assert pageMessage.equals("Epic sadface: Username and password do not match any user in this service");
         System.out.println(pageMessage);
+    }
+
+    @When("User add product to cart")
+    public void user_add_product_to_cart() throws InterruptedException {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new io.cucumber.java.PendingException();
+        ProductsPage.addtocart();
+        Thread.sleep(4000);
+    }
+
+    @When("User Open Cart")
+    public void user_open_cart() throws InterruptedException {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new io.cucumber.java.PendingException();
+        ProductsPage.opencart();
+        Thread.sleep(4000);
+    }
+
+    @When("Proceed Checkout")
+    public void user_checkout_cart() throws InterruptedException {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new io.cucumber.java.PendingException();
+        YourCartPage.proceedCheckout();
+        Thread.sleep(4000);
+    }
+
+    @When("Enter Contact Information")
+    public void user_enterinfo_for_checkout() throws InterruptedException {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new io.cucumber.java.PendingException();
+        CheckoutUserInfo.enterfirtname();
+        CheckoutUserInfo.enterlastname();
+        CheckoutUserInfo.zipcode();
+        CheckoutUserInfo.continuepayment();
+
+        Thread.sleep(4000);
+    }
+
+    @When("Finish Order")
+    public void finish_order() throws InterruptedException {
+        // Write code here that turns the phrase above into concrete actions
+        //throw new io.cucumber.java.PendingException();
+        CheckoutOverview.FinishOrder();
+        Thread.sleep(4000);
+    }
+
+    @When("User completed order and gets success message validation")
+    public void user_gets_success_validation_message() {
+        String successMessage= CheckoutOverview.assertSuccessMessage();
+        assert successMessage.equals("Thank you for your order!");
+        System.out.println(successMessage);
     }
 }
